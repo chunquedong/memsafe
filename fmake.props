@@ -1,0 +1,6 @@
+name = memsafe
+summary = C++ memory safe pointer
+outType = exe
+version = 1.0
+srcDirs = ./
+incDir = ./

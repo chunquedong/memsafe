@@ -17,9 +17,11 @@ namespace memsafe {
 
 thread_local std::vector<const char*> _unsafe_stack;
 
-#define _sl_(x) #x
-#define _strline_(x) _sl_(x)
+#if _DEBUG
 #define UNSAFE(ptr, name) memsafe::UnsafeGuard _unsafe_gurad_ ## ptr ## name (__FUNCTION__); ptr._func = __FUNCTION__;
+#else
+#define UNSAFE(ptr, name)
+#endif
 
 void my_assert(bool c, const char* msg);
 

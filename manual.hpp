@@ -134,6 +134,9 @@ public:
             my_assert(p, "non-nullable");
         }
     }
+    explicit ManualPtr(T& p, bool is_nullable = false, bool in_stack = true)
+        : pointer(&p) {
+    }
 #endif
     T* operator->() { my_assert(pointer != nullptr, "try deref null pointer"); return pointer; }
 
@@ -145,7 +148,9 @@ public:
 
 template<typename T>
 void delete_manual_ptr(T& ptr) {
+#if _DEBUG
     ptr.pointer->release(false);
+#endif
     delete ptr.pointer;
     ptr.pointer = nullptr;
 }

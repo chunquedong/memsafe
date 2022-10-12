@@ -3,11 +3,10 @@
 #include <stdio.h>
 #include "memsafe.hpp"
 
-
 using namespace memsafe;
 
 
-struct A : public MemSafeObj {
+struct A : public ManualObj {
 	int i = 0;
 };
 
@@ -15,29 +14,37 @@ struct A : public MemSafeObj {
 void mem_ok() {
 	if (true) {
 		m_<A> a(new A());
-		delete_it(a);
+		delete_manual_ptr(a);
 	}
 	if (true) {
 		A a;
 		m_<A> p(a);
 	}
+	if (true) {
+		unsafe_<A> p(new A());
+		UNSAFE(p);
+		UNSAFE(p, 2);
+		p = unsafe_<A>(new A());
+		int i = p->i;
+		delete_unsafe_ptr(p);
+	}
 }
 
 void mem_leak() {
 	m_<A> a(new A());
-	//delete_it(a);
+	//delete_manual_ptr(a);
 }
 
 void use_after_free() {
 	m_<A> a(new A());
-	delete_it(a);
+	delete_manual_ptr(a);
 	int i = a->i;
 }
 
 void delete_alive() {
 	m_<A> a(new A());
 	m_<A> b = a;
-	delete_it(a);
+	delete_manual_ptr(a);
 }
 
 void stack_dangling() {
@@ -57,6 +64,12 @@ void non_nullable() {
 void test_unique() {
 	u_<A> p(new A());
 	u_<A> p2 = std::move(p);
+	int i = p->i;
+}
+
+void test_unsafe() {
+	unsafe_<A> p(new A());
+	//p = unsafe_<A>(new A());
 	int i = p->i;
 }
 
@@ -88,6 +101,9 @@ int main(int argc, char **argv) {
 			break;
 		case '5':
 			test_unique();
+			break;
+		case '6':
+			test_unsafe();
 			break;
 		default:
 			goto end;

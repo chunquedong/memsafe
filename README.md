@@ -3,7 +3,7 @@
 The real-time C++ memory safe check. No runtime overhead in release mode.
 
 ```
-struct A : public MemSafeObj {
+struct A : public ManualObj {
     int i = 0;
 };
 
@@ -31,4 +31,14 @@ void stack_dangling() {
         p = m_<A>(a);
     }
 }
+```
+
+unsafe pointer must mark as UNSAFE in each block
+
+```
+    unsafe_<A> p(new A());
+    UNSAFE(p);
+    p = unsafe_<A>(new A());
+    int i = p->i;
+    delete_unsafe_ptr(p);
 ```
